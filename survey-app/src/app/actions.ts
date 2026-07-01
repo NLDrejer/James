@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { eq, and } from "drizzle-orm";
 import { db } from "@/db";
 import { users, questions, answers } from "@/db/schema";
@@ -70,6 +71,8 @@ export async function submitAnswer(questionId: number, formData: FormData) {
       answerText: answerText.trim(),
     });
   }
+
+  revalidatePath("/survey");
 }
 
 export async function addQuestion(formData: FormData) {
@@ -86,6 +89,9 @@ export async function addQuestion(formData: FormData) {
   const nextOrder = (last[0]?.order ?? 0) + 1;
 
   await db.insert(questions).values({ text: text.trim(), order: nextOrder });
+
+  revalidatePath("/admin");
+  revalidatePath("/survey");
 }
 
 export async function deleteQuestion(questionId: number) {
@@ -93,4 +99,7 @@ export async function deleteQuestion(questionId: number) {
   if (!username || !isAdminUsername(username)) redirect("/");
 
   await db.delete(questions).where(eq(questions.id, questionId));
+
+  revalidatePath("/admin");
+  revalidatePath("/survey");
 }
