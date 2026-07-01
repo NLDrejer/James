@@ -44,7 +44,26 @@ export async function clearSession() {
   store.delete(COOKIE_NAME);
 }
 
+/**
+ * Admin usernames can be configured two ways:
+ * - ADMIN_USERNAMES: comma-separated list, e.g. "admin,nikolaj"
+ * - ADMIN_USERNAME: single username (kept for backwards compatibility)
+ *
+ * If neither is set, defaults to a single "admin" username.
+ */
+function getAdminUsernames(): string[] {
+  const list = process.env.ADMIN_USERNAMES;
+  if (list && list.trim()) {
+    return list
+      .split(",")
+      .map((u) => u.trim().toLowerCase())
+      .filter(Boolean);
+  }
+
+  const single = process.env.ADMIN_USERNAME ?? "admin";
+  return [single.toLowerCase()];
+}
+
 export function isAdminUsername(username: string): boolean {
-  const adminUsername = process.env.ADMIN_USERNAME ?? "admin";
-  return username.toLowerCase() === adminUsername.toLowerCase();
+  return getAdminUsernames().includes(username.toLowerCase());
 }
