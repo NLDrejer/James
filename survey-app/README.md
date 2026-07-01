@@ -14,7 +14,7 @@ just a username. One reserved username acts as admin.
 
 1. `/` — enter a username. No password. If the username doesn't exist yet, it's created.
 2. Non-admin usernames land on `/survey` — answer a list of questions (one text field each), answers are saved per user.
-3. The admin username (default `admin`, configurable via `ADMIN_USERNAME` env var) lands on `/admin` instead — add/remove survey questions.
+3. Admin username(s) (default `admin`, configurable via `ADMIN_USERNAMES` or `ADMIN_USERNAME` env var) land on `/admin` instead — add/edit/reorder/remove survey questions.
 
 ## Local development
 
@@ -64,7 +64,8 @@ Useful scripts:
 See `.env.example`:
 
 - `DATABASE_URL` — Postgres connection string (Neon / Vercel Postgres)
-- `ADMIN_USERNAME` — username that gets routed to `/admin` (default `admin`)
+- `ADMIN_USERNAMES` — comma-separated list of usernames routed to `/admin` instead of `/survey` (e.g. `admin,nikolaj`). Takes precedence over `ADMIN_USERNAME` if both are set.
+- `ADMIN_USERNAME` — single admin username, kept for backwards compatibility (default `admin`)
 - `SESSION_SECRET` — secret used to sign the session cookie
 
 ## Deploying
