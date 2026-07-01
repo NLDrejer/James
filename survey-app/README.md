@@ -18,6 +18,27 @@ just a username. One reserved username acts as admin.
 
 ## Local development
 
+You need a Postgres database. Two options:
+
+**Option A — local Postgres via Docker (no cloud account needed):**
+
+```bash
+docker compose up -d
+```
+
+This starts Postgres on `localhost:5432` (user `survey`, password `survey`,
+database `survey`). Use this connection string in `.env.local`:
+
+```
+DATABASE_URL=postgres://survey:survey@localhost:5432/survey
+```
+
+**Option B — Neon / Vercel Postgres:** create a database via the Vercel
+dashboard (Storage tab) and use `vercel env pull .env.local` to grab the
+connection string, or copy it from the Neon dashboard directly.
+
+Then:
+
 1. Copy the env file and fill in your database URL:
 
    ```bash
