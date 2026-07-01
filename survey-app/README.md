@@ -59,6 +59,10 @@ Useful scripts:
 - `npm run db:migrate` — apply generated migrations
 - `npm run db:studio` — open Drizzle Studio to browse data
 
+## Notes
+
+- The default `src/app/favicon.ico` is still the stock Next.js placeholder — swap it for real branding whenever we have some.
+
 ## Environment variables
 
 See `.env.example`:
