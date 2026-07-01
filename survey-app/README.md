@@ -30,10 +30,10 @@ just a username. One reserved username acts as admin.
    npm install
    ```
 
-3. Push the schema to your database (no migration files needed for local iteration):
+3. Apply the database schema (runs the committed migrations in `drizzle/`):
 
    ```bash
-   npm run db:push
+   npm run db:migrate
    ```
 
 4. Run the dev server:
@@ -52,12 +52,20 @@ Schema lives in `src/db/schema.ts`:
 - `questions` — id, text, order, created_at
 - `answers` — id, user_id, question_id, answer_text, created_at
 
+Migrations are committed to the `drizzle/` folder and are the source of truth
+for the database schema. When you change `src/db/schema.ts`:
+
+1. `npm run db:generate` — generate a new SQL migration file from the schema diff
+2. Review the generated SQL in `drizzle/`
+3. Commit the migration file(s) alongside your schema change
+4. `npm run db:migrate` — apply migrations to your target database (local, preview, or prod)
+
 Useful scripts:
 
-- `npm run db:push` — push schema changes straight to the DB (good for early dev)
 - `npm run db:generate` — generate SQL migration files from schema changes
-- `npm run db:migrate` — apply generated migrations
+- `npm run db:migrate` — apply committed migrations to the database
 - `npm run db:studio` — open Drizzle Studio to browse data
+- `npm run db:push` — push schema changes straight to the DB, bypassing migrations. Only for quick throwaway experiments; prefer generate+migrate for anything you intend to keep.
 
 ## Environment variables
 
