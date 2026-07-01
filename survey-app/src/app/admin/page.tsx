@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { asc } from "drizzle-orm";
 import { db } from "@/db";
@@ -27,6 +28,15 @@ export default async function AdminPage() {
               </button>
             </form>
           </div>
+        </div>
+
+        <div className="mb-6">
+          <Link
+            href="/admin/responses"
+            className="text-sm font-medium text-gray-900 underline hover:text-gray-600"
+          >
+            View submitted responses &rarr;
+          </Link>
         </div>
 
         <div className="mb-6 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
