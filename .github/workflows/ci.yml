@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  pull_request:
+    paths:
+      - "survey-app/**"
+      - ".github/workflows/ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "survey-app/**"
+      - ".github/workflows/ci.yml"
+
+jobs:
+  lint-typecheck-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: survey-app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: survey-app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Build
+        # A dummy DATABASE_URL is enough: pages are dynamic (use cookies()),
+        # so no DB connection is made at build time.
+        env:
+          DATABASE_URL: "postgres://user:pass@localhost:5432/dummy"
+          ADMIN_USERNAME: "admin"
+          SESSION_SECRET: "ci-dummy-secret"
+        run: npm run build
