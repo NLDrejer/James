@@ -2,15 +2,19 @@ import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import * as schema from "./schema";
 
-// Lazy initialization: defer DATABASE_URL check until runtime
+// Lazy initialization: defer JAMES_DATABASE_URL check until runtime
 let dbInstance: ReturnType<typeof drizzle> | null = null;
 
 function getDb() {
   if (!dbInstance) {
-    if (!process.env.DATABASE_URL) {
-      throw new Error("DATABASE_URL is not set. Add it to your .env.local file or Vercel environment variables.");
+    // Use JAMES_DATABASE_URL (with prefix for Vercel environment)
+    const databaseUrl = process.env.JAMES_DATABASE_URL;
+    
+    if (!databaseUrl) {
+      throw new Error("JAMES_DATABASE_URL is not set. Add it to your .env.local file or Vercel environment variables.");
     }
-    const sql = neon(process.env.DATABASE_URL);
+    
+    const sql = neon(databaseUrl);
     dbInstance = drizzle(sql, { schema });
   }
   return dbInstance;
