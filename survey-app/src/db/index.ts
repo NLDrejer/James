@@ -28,6 +28,7 @@ const queryProxy = new Proxy({} as Database["query"], {
   get: (_target, prop: keyof Database["query"]) => getDb().query[prop],
 });
 
-export const db = {
-  query: queryProxy,
-} as Database;
+export const db = new Proxy({} as Database, {
+  get: (_target, prop: keyof Database) =>
+    prop === "query" ? queryProxy : getDb()[prop],
+}) as Database;
