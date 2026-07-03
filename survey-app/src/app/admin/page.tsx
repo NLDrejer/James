@@ -1,9 +1,16 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { asc } from "drizzle-orm";
 import { db } from "@/db";
 import { questions } from "@/db/schema";
 import { getSessionUsername, isAdminUsername } from "@/lib/session";
-import { addQuestion, deleteQuestion, logout } from "../actions";
+import {
+  addQuestion,
+  deleteQuestion,
+  logout,
+  moveQuestion,
+  updateQuestionText,
+} from "../actions";
 
 export default async function AdminPage() {
   const username = await getSessionUsername();
@@ -27,6 +34,15 @@ export default async function AdminPage() {
               </button>
             </form>
           </div>
+        </div>
+
+        <div className="mb-6">
+          <Link
+            href="/admin/responses"
+            className="text-sm font-medium text-gray-900 underline hover:text-gray-600"
+          >
+            View submitted responses &rarr;
+          </Link>
         </div>
 
         <div className="mb-6 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
@@ -59,21 +75,72 @@ export default async function AdminPage() {
             allQuestions.map((q, i) => (
               <div
                 key={q.id}
-                className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
+                className="flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between"
               >
-                <span className="text-sm text-gray-900">
-                  {i + 1}. {q.text}
-                </span>
                 <form
-                  action={async () => {
+                  action={async (formData: FormData) => {
                     "use server";
-                    await deleteQuestion(q.id);
+                    await updateQuestionText(q.id, formData);
                   }}
+                  className="flex flex-1 items-center gap-2"
                 >
-                  <button className="text-sm text-red-600 hover:underline">
-                    Delete
+                  <span className="text-sm text-gray-500">{i + 1}.</span>
+                  <input
+                    type="text"
+                    name="text"
+                    defaultValue={q.text}
+                    className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900"
+                  />
+                  <button
+                    type="submit"
+                    className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-gray-700"
+                  >
+                    Save
                   </button>
                 </form>
+
+                <div className="flex items-center gap-2">
+                  <form
+                    action={async () => {
+                      "use server";
+                      await moveQuestion(q.id, "up");
+                    }}
+                  >
+                    <button
+                      type="submit"
+                      disabled={i === 0}
+                      className="rounded-md border border-gray-300 px-2 py-1 text-sm text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30"
+                      aria-label="Move up"
+                    >
+                      &uarr;
+                    </button>
+                  </form>
+                  <form
+                    action={async () => {
+                      "use server";
+                      await moveQuestion(q.id, "down");
+                    }}
+                  >
+                    <button
+                      type="submit"
+                      disabled={i === allQuestions.length - 1}
+                      className="rounded-md border border-gray-300 px-2 py-1 text-sm text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30"
+                      aria-label="Move down"
+                    >
+                      &darr;
+                    </button>
+                  </form>
+                  <form
+                    action={async () => {
+                      "use server";
+                      await deleteQuestion(q.id);
+                    }}
+                  >
+                    <button className="text-sm text-red-600 hover:underline">
+                      Delete
+                    </button>
+                  </form>
+                </div>
               </div>
             ))
           )}
