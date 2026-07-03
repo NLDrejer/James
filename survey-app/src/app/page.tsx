@@ -29,13 +29,17 @@ export default async function LoginPage({
             placeholder="Username"
             required
             maxLength={64}
+            pattern="[A-Za-z0-9][A-Za-z0-9._-]{0,63}"
+            title="Use 1-64 characters: letters, numbers, dot, underscore, or hyphen. Start with a letter or number."
             autoFocus
             className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900"
           />
 
           {error && (
             <p className="text-sm text-red-600">
-              Please enter a valid username.
+              {error === "rate_limited"
+                ? "Too many login attempts. Please wait a minute and try again."
+                : "Please enter a valid username."}
             </p>
           )}
 

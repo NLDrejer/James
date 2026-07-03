@@ -2,10 +2,23 @@ import { cookies } from "next/headers";
 import crypto from "node:crypto";
 
 const COOKIE_NAME = "survey_session";
-const SECRET = process.env.JAMES_SESSION_SECRET ?? "dev-secret-change-me";
+
+function getSessionSecret(): string {
+  const secret = process.env.JAMES_SESSION_SECRET;
+  if (secret) return secret;
+
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("JAMES_SESSION_SECRET must be set in production");
+  }
+
+  return "dev-secret-change-me";
+}
 
 function sign(value: string): string {
-  const hmac = crypto.createHmac("sha256", SECRET).update(value).digest("hex");
+  const hmac = crypto
+    .createHmac("sha256", getSessionSecret())
+    .update(value)
+    .digest("hex");
   return `${value}.${hmac}`;
 }
 
@@ -14,7 +27,10 @@ function verify(signed: string): string | null {
   if (idx === -1) return null;
   const value = signed.slice(0, idx);
   const sig = signed.slice(idx + 1);
-  const expected = crypto.createHmac("sha256", SECRET).update(value).digest("hex");
+  const expected = crypto
+    .createHmac("sha256", getSessionSecret())
+    .update(value)
+    .digest("hex");
   const a = Buffer.from(sig);
   const b = Buffer.from(expected);
   if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
