@@ -32,7 +32,7 @@ async function getLoginAttemptKeys(username: string): Promise<string[]> {
     headerStore.get("x-real-ip") ||
     headerStore.get("cf-connecting-ip") ||
     "unknown";
-  return [`ip:${ip}`, `user:${ip}:${username.toLowerCase()}`];
+  return [`ip:${ip}`, `ip:${ip}:username:${username.toLowerCase()}`];
 }
 
 function cleanupExpiredLoginAttempts(now: number) {
@@ -70,7 +70,8 @@ export async function login(formData: FormData) {
   }
 
   const loginAttemptKeys = await getLoginAttemptKeys(username);
-  if (loginAttemptKeys.some((key) => isRateLimited(key))) {
+  const rateLimited = loginAttemptKeys.map(isRateLimited).some(Boolean);
+  if (rateLimited) {
     redirect("/?error=rate_limited");
   }
 
