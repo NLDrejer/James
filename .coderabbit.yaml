@@ -1,0 +1,67 @@
+rules:
+  # Review TypeScript/JavaScript code
+  - files:
+      patterns:
+        - "survey-app/**/*.ts"
+        - "survey-app/**/*.tsx"
+        - "survey-app/**/*.js"
+        - "survey-app/**/*.jsx"
+    rules:
+      - type: rule
+        name: Review TypeScript/JavaScript code
+        instructions: "Focus on code quality, type safety, performance, and best practices for Next.js and React."
+
+  # Review configuration files
+  - files:
+      patterns:
+        - "survey-app/*.config.ts"
+        - "survey-app/*.config.js"
+        - ".github/workflows/*.yml"
+      exclude:
+        - "node_modules/**"
+        - "**/*.d.ts"
+    rules:
+      - type: rule
+        name: Review configuration files
+        instructions: "Verify configuration is correct and follows best practices."
+
+  # Review database/schema changes
+  - files:
+      patterns:
+        - "survey-app/src/db/**"
+    rules:
+      - type: rule
+        name: Review database changes
+        instructions: "Check for SQL injection risks, schema compatibility, and migration safety."
+
+  # Skip node_modules and build artifacts
+  - files:
+      patterns:
+        - "node_modules/**"
+        - ".next/**"
+        - "dist/**"
+        - "build/**"
+    rules:
+      - type: rule
+        name: Skip build artifacts
+        instructions: "Skip review"
+
+review:
+  review_comments_disabled: false
+  auto_review: true
+  auto_incremental_review: true
+  auto_review_tool_required_score: 10
+  review_status_last_comment_only: false
+  max_files_to_summarize: 10
+  max_initial_comment_length: 500
+
+codeowners:
+  auto_author_assignment: false
+
+exclude:
+  - "node_modules/**"
+  - ".next/**"
+  - "dist/**"
+  - "build/**"
+  - "coverage/**"
+  - "*.lock"
