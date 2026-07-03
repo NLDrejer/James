@@ -18,6 +18,7 @@ const LOGIN_ATTEMPT_WINDOW_MS = 60_000;
 const MAX_LOGIN_ATTEMPTS_PER_WINDOW = 10;
 
 const loginAttempts = new Map<string, { count: number; resetAt: number }>();
+let lastLoginAttemptCleanup = 0;
 
 function isValidUsername(username: string): boolean {
   return USERNAME_PATTERN.test(username);
@@ -34,8 +35,21 @@ async function getLoginAttemptKey(username: string): Promise<string> {
   return `${ip}:${username.toLowerCase()}`;
 }
 
+function cleanupExpiredLoginAttempts(now: number) {
+  if (now - lastLoginAttemptCleanup < LOGIN_ATTEMPT_WINDOW_MS) return;
+
+  lastLoginAttemptCleanup = now;
+  for (const [key, attempt] of loginAttempts) {
+    if (attempt.resetAt <= now) {
+      loginAttempts.delete(key);
+    }
+  }
+}
+
 function isRateLimited(key: string): boolean {
   const now = Date.now();
+  cleanupExpiredLoginAttempts(now);
+
   const existing = loginAttempts.get(key);
 
   if (!existing || existing.resetAt <= now) {
