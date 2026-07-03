@@ -11,7 +11,7 @@ if (fs.existsSync(envLocalPath)) {
     const eq = trimmed.indexOf("=");
     if (eq === -1) continue;
     const key = trimmed.slice(0, eq).trim();
-    const value = trimmed.slice(eq + 1).trim().replace(/^["']|["']$/g, "");
+    const value = trimmed.slice(eq + 1).trim().replace(/^[\"']|[\"']$/g, "");
     if (!process.env[key]) process.env[key] = value;
   }
 }
@@ -21,6 +21,6 @@ export default defineConfig({
   out: "./drizzle",
   dialect: "postgresql",
   dbCredentials: {
-    url: process.env.DATABASE_URL ?? "",
+    url: process.env.JAMES_DATABASE_URL ?? "",
   },
 });
