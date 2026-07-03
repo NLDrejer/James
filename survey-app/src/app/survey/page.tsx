@@ -24,6 +24,14 @@ export default async function SurveyPage() {
   });
   const answerMap = new Map(userAnswers.map((a) => [a.questionId, a.answerText]));
 
+  const answeredCount = allQuestions.filter((q) => {
+    const a = answerMap.get(q.id);
+    return a !== undefined && a.trim() !== "";
+  }).length;
+  const totalCount = allQuestions.length;
+  const isComplete = totalCount > 0 && answeredCount === totalCount;
+  const progressPercent = totalCount > 0 ? Math.round((answeredCount / totalCount) * 100) : 0;
+
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-10">
       <div className="mx-auto max-w-xl">
@@ -38,6 +46,32 @@ export default async function SurveyPage() {
             </form>
           </div>
         </div>
+
+        {totalCount > 0 && (
+          <div className="mb-6">
+            <div className="mb-2 flex items-center justify-between text-sm text-gray-600">
+              <span>
+                {answeredCount} of {totalCount} answered
+              </span>
+              <span>{progressPercent}%</span>
+            </div>
+            <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+              <div
+                className="h-full rounded-full bg-gray-900 transition-all"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        {isComplete && (
+          <div className="mb-6 rounded-xl border border-green-200 bg-green-50 p-5 text-sm text-green-800">
+            <p className="font-medium">Thanks for completing the survey! 🎉</p>
+            <p className="mt-1 text-green-700">
+              You can still update your answers below any time.
+            </p>
+          </div>
+        )}
 
         {allQuestions.length === 0 ? (
           <p className="rounded-md border border-dashed border-gray-300 p-6 text-sm text-gray-500">
