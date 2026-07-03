@@ -1,8 +1,8 @@
 import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
+import { drizzle, type NeonHttpDatabase } from "drizzle-orm/neon-http";
 import * as schema from "./schema";
 
-type Database = ReturnType<typeof drizzle<typeof schema>>;
+type Database = NeonHttpDatabase<typeof schema>;
 
 // Lazy initialization: defer JAMES_DATABASE_URL check until runtime
 let dbInstance: Database | null = null;
@@ -24,11 +24,10 @@ function getDb(): Database {
   return dbInstance;
 }
 
-const queryProxy = new Proxy({} as Database["query"], {
-  get: (_target, prop: keyof Database["query"]) => getDb().query[prop],
-});
-
 export const db = new Proxy({} as Database, {
-  get: (_target, prop: keyof Database) =>
-    prop === "query" ? queryProxy : getDb()[prop],
-}) as Database;
+  get: (_target, prop, receiver) => Reflect.get(getDb(), prop, receiver),
+  has: (_target, prop) => prop in getDb(),
+  ownKeys: () => Reflect.ownKeys(getDb()),
+  getOwnPropertyDescriptor: (_target, prop) =>
+    Object.getOwnPropertyDescriptor(getDb(), prop),
+});
