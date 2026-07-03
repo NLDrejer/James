@@ -24,7 +24,7 @@ function isValidUsername(username: string): boolean {
   return USERNAME_PATTERN.test(username);
 }
 
-async function getLoginAttemptKey(username: string): Promise<string> {
+async function getLoginAttemptKeys(username: string): Promise<string[]> {
   const headerStore = await headers();
   const forwardedFor = headerStore.get("x-forwarded-for")?.split(",")[0]?.trim();
   const ip =
@@ -32,7 +32,7 @@ async function getLoginAttemptKey(username: string): Promise<string> {
     headerStore.get("x-real-ip") ||
     headerStore.get("cf-connecting-ip") ||
     "unknown";
-  return `${ip}:${username.toLowerCase()}`;
+  return [`ip:${ip}`, `ip:${ip}:username:${username.toLowerCase()}`];
 }
 
 function cleanupExpiredLoginAttempts(now: number) {
@@ -69,7 +69,9 @@ export async function login(formData: FormData) {
     redirect("/?error=invalid");
   }
 
-  if (isRateLimited(await getLoginAttemptKey(username))) {
+  const loginAttemptKeys = await getLoginAttemptKeys(username);
+  const rateLimited = loginAttemptKeys.map(isRateLimited).some(Boolean);
+  if (rateLimited) {
     redirect("/?error=rate_limited");
   }
 
