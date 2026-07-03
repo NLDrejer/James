@@ -42,7 +42,7 @@ jobs:
         # A dummy JAMES_DATABASE_URL is enough: pages are dynamic (use cookies()),
         # so no DB connection is made at build time.
         env:
-          JAMES_DATABASE_URL: "postgres://user:***@localhost:5432/dummy"
+          JAMES_DATABASE_URL: "postgres://user:pass@localhost:5432/dummy"
           JAMES_ADMIN_USERNAME: "admin"
           JAMES_SESSION_SECRET: "ci-dummy-secret"
         run: npm run build

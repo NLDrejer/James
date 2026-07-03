@@ -11,11 +11,13 @@ function getDb(): Database {
   if (!dbInstance) {
     // Use JAMES_DATABASE_URL (with prefix for Vercel environment)
     const databaseUrl = process.env.JAMES_DATABASE_URL;
-    
+
     if (!databaseUrl) {
-      throw new Error("JAMES_DATABASE_URL is not set. Add it to your .env.local file or Vercel environment variables.");
+      throw new Error(
+        "JAMES_DATABASE_URL is not set. Add it to your .env.local file or Vercel environment variables."
+      );
     }
-    
+
     const sql = neon(databaseUrl);
     dbInstance = drizzle(sql, { schema });
   }
