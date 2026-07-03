@@ -1,11 +1,13 @@
 import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
+import { drizzle, type NeonHttpDatabase } from "drizzle-orm/neon-http";
 import * as schema from "./schema";
 
-// Lazy initialization: defer JAMES_DATABASE_URL check until runtime
-let dbInstance: ReturnType<typeof drizzle> | null = null;
+type Database = NeonHttpDatabase<typeof schema>;
 
-function getDb() {
+// Lazy initialization: defer JAMES_DATABASE_URL check until runtime
+let dbInstance: Database | null = null;
+
+function getDb(): Database {
   if (!dbInstance) {
     // Use JAMES_DATABASE_URL (with prefix for Vercel environment)
     const databaseUrl = process.env.JAMES_DATABASE_URL;
@@ -20,10 +22,10 @@ function getDb() {
   return dbInstance;
 }
 
-export const db = {
-  query: new Proxy({} as any, {
-    get: (_target, prop) => {
-      return getDb().query[prop];
-    },
-  }),
-} as ReturnType<typeof drizzle>;
+export const db = new Proxy({} as Database, {
+  get: (_target, prop, receiver) => Reflect.get(getDb(), prop, receiver),
+  has: (_target, prop) => prop in getDb(),
+  ownKeys: () => Reflect.ownKeys(getDb()),
+  getOwnPropertyDescriptor: (_target, prop) =>
+    Object.getOwnPropertyDescriptor(getDb(), prop),
+});
