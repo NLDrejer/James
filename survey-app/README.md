@@ -14,7 +14,7 @@ just a username. One reserved username acts as admin.
 
 1. `/` — enter a username. No password. If the username doesn't exist yet, it's created.
 2. Non-admin usernames land on `/survey` — answer a list of questions (one text field each), answers are saved per user.
-3. Admin username(s) (default `admin`, configurable via `ADMIN_USERNAMES` or `ADMIN_USERNAME` env var) land on `/admin` instead — add/edit/reorder/remove survey questions.
+3. Admin username(s) (default `admin`, configurable via `JAMES_ADMIN_USERNAMES` or `JAMES_ADMIN_USERNAME` env var) land on `/admin` instead — add/edit/reorder/remove survey questions.
 
 ## Local development
 
@@ -75,10 +75,10 @@ Useful scripts:
 
 See `.env.example`:
 
-- `DATABASE_URL` — Postgres connection string (Neon / Vercel Postgres)
-- `ADMIN_USERNAMES` — comma-separated list of usernames routed to `/admin` instead of `/survey` (e.g. `admin,nikolaj`). Takes precedence over `ADMIN_USERNAME` if both are set.
-- `ADMIN_USERNAME` — single admin username, kept for backwards compatibility (default `admin`)
-- `SESSION_SECRET` — secret used to sign the session cookie
+- `JAMES_DATABASE_URL` — Postgres connection string (Neon / Vercel Postgres). `DATABASE_URL` is also supported as a compatibility fallback for Vercel/Neon integrations.
+- `JAMES_ADMIN_USERNAMES` — comma-separated list of usernames routed to `/admin` instead of `/survey` (e.g. `admin,nikolaj`). Takes precedence over `JAMES_ADMIN_USERNAME` if both are set. `ADMIN_USERNAMES` is also supported as a compatibility fallback.
+- `JAMES_ADMIN_USERNAME` — single admin username, kept for backwards compatibility (default `admin`). `ADMIN_USERNAME` is also supported as a compatibility fallback.
+- `JAMES_SESSION_SECRET` — secret used to sign the session cookie. `SESSION_SECRET` is also supported as a compatibility fallback.
 
 ## Deploying
 

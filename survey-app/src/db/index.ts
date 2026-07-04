@@ -11,6 +11,10 @@ type DatabaseLike = Database | TestDatabase;
 // Lazy initialization: defer JAMES_DATABASE_URL check until runtime
 let dbInstance: DatabaseLike | null = null;
 
+export function getDatabaseUrl(): string | undefined {
+  return process.env.JAMES_DATABASE_URL || process.env.DATABASE_URL;
+}
+
 function getDb(): DatabaseLike {
   if (!dbInstance) {
     if (process.env.JAMES_TEST_DB === "memory") {
@@ -18,12 +22,13 @@ function getDb(): DatabaseLike {
       return dbInstance;
     }
 
-    // Use JAMES_DATABASE_URL (with prefix for Vercel environment)
-    const databaseUrl = process.env.JAMES_DATABASE_URL;
+    // Prefer the James-prefixed variable, but keep DATABASE_URL as a
+    // compatibility fallback for Vercel/Neon integrations and older setups.
+    const databaseUrl = getDatabaseUrl();
 
     if (!databaseUrl) {
       throw new Error(
-        "JAMES_DATABASE_URL is not set. Add it to your .env.local file or Vercel environment variables."
+        "JAMES_DATABASE_URL or DATABASE_URL is not set. Add one to your .env.local file or Vercel environment variables."
       );
     }
 

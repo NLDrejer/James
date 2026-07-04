@@ -3,12 +3,12 @@ import crypto from "node:crypto";
 
 const COOKIE_NAME = "survey_session";
 
-function getSessionSecret(): string {
-  const secret = process.env.JAMES_SESSION_SECRET;
+export function getSessionSecret(): string {
+  const secret = process.env.JAMES_SESSION_SECRET || process.env.SESSION_SECRET;
   if (secret) return secret;
 
   if (process.env.NODE_ENV === "production") {
-    throw new Error("JAMES_SESSION_SECRET must be set in production");
+    throw new Error("JAMES_SESSION_SECRET or SESSION_SECRET must be set in production");
   }
 
   return "dev-secret-change-me";
@@ -63,12 +63,13 @@ export async function clearSession() {
 /**
  * Admin usernames can be configured two ways:
  * - JAMES_ADMIN_USERNAMES: comma-separated list, e.g. "admin,nikolaj"
- * - JAMES_ADMIN_USERNAME: single username (kept for backwards compatibility)
+ * - JAMES_ADMIN_USERNAME: single username
+ * - ADMIN_USERNAMES / ADMIN_USERNAME: backwards-compatible aliases
  *
  * If neither is set, defaults to a single "admin" username.
  */
 function getAdminUsernames(): string[] {
-  const list = process.env.JAMES_ADMIN_USERNAMES;
+  const list = process.env.JAMES_ADMIN_USERNAMES || process.env.ADMIN_USERNAMES;
   if (list && list.trim()) {
     return list
       .split(",")
@@ -76,7 +77,7 @@ function getAdminUsernames(): string[] {
       .filter(Boolean);
   }
 
-  const single = process.env.JAMES_ADMIN_USERNAME ?? "admin";
+  const single = process.env.JAMES_ADMIN_USERNAME || process.env.ADMIN_USERNAME || "admin";
   return [single.toLowerCase()];
 }
 
