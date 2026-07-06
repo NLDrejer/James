@@ -1,19 +1,7 @@
 import { defineConfig } from "drizzle-kit";
-import fs from "node:fs";
-import path from "node:path";
+import { config } from "dotenv";
 
-const envLocalPath = path.resolve(process.cwd(), ".env.local");
-if (fs.existsSync(envLocalPath)) {
-  for (const line of fs.readFileSync(envLocalPath, "utf8").split("\n")) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith("#")) continue;
-    const eq = trimmed.indexOf("=");
-    if (eq === -1) continue;
-    const key = trimmed.slice(0, eq).trim();
-    const value = trimmed.slice(eq + 1).trim().replace(/^[\"']|[\"']$/g, "");
-    if (!process.env[key]) process.env[key] = value;
-  }
-}
+config({ path: ".env.local" });
 
 export default defineConfig({
   schema: "./src/db/schema.ts",

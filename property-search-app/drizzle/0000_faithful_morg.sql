@@ -7,5 +7,5 @@ CREATE TABLE "data_source_assessments" (
 	"allowed_use_summary" text NOT NULL,
 	"blocked_use_summary" text NOT NULL,
 	"live_integration_enabled" boolean DEFAULT false NOT NULL,
-	"assessed_at" timestamp DEFAULT now() NOT NULL
+	"assessed_at" timestamp with time zone DEFAULT now() NOT NULL
 );

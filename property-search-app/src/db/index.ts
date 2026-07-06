@@ -16,7 +16,7 @@ export function getDatabaseUrl(): string | undefined {
 function getDb(): DatabaseLike {
   if (!dbInstance) {
     if (process.env.PROPERTY_SEARCH_TEST_DB === "memory") {
-      dbInstance = createTestDatabase() as DatabaseLike;
+      dbInstance = createTestDatabase();
       return dbInstance;
     }
 
@@ -28,7 +28,8 @@ function getDb(): DatabaseLike {
     }
 
     const sql = neon(databaseUrl);
-    dbInstance = drizzle(sql, { schema }) as unknown as DatabaseLike;
+    const database: Database = drizzle(sql, { schema });
+    dbInstance = database;
   }
   return dbInstance;
 }

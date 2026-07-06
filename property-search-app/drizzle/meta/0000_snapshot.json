@@ -1,5 +1,5 @@
 {
-  "id": "66b93f4a-cc55-44ea-b04d-377bdfad8fcb",
+  "id": "c8a0ec40-dc6a-4809-a7da-2265e6c329a8",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -59,7 +59,7 @@
         },
         "assessed_at": {
           "name": "assessed_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"

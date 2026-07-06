@@ -9,7 +9,7 @@ export const dataSourceAssessments = pgTable("data_source_assessments", {
   allowedUseSummary: text("allowed_use_summary").notNull(),
   blockedUseSummary: text("blocked_use_summary").notNull(),
   liveIntegrationEnabled: boolean("live_integration_enabled").notNull().default(false),
-  assessedAt: timestamp("assessed_at").defaultNow().notNull(),
+  assessedAt: timestamp("assessed_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
 export type DataSourceAssessment = typeof dataSourceAssessments.$inferSelect;
