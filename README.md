@@ -145,7 +145,8 @@ Preferred names use the `JAMES_` prefix. Compatibility fallbacks exist because V
 | `JAMES_ADMIN_USERNAMES` | `ADMIN_USERNAMES` | Comma-separated admin usernames. |
 | `JAMES_ADMIN_USERNAME` | `ADMIN_USERNAME` | Single admin username fallback. |
 
-Do not commit `.env*` files. Pull or configure them through Vercel/local secrets.
+Do not commit secret-bearing `.env*` files such as `.env.local` or `.env.production`.
+Keep `.env.example` committed as the local setup template.
 
 ### 4. Migrations are the database source of truth
 
