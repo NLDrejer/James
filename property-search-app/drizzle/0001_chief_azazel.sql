@@ -31,7 +31,8 @@ CREATE TABLE "ownership_links" (
 	"source_url" text,
 	"retrieved_at" timestamp with time zone NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "ownership_links_confidence_score_range" CHECK ("confidence_score" IS NULL OR ("confidence_score" >= 0 AND "confidence_score" <= 1))
 );
 --> statement-breakpoint
 CREATE TABLE "persons" (
@@ -78,4 +79,8 @@ ALTER TABLE "ownership_links" ADD CONSTRAINT "ownership_links_property_id_proper
 ALTER TABLE "ownership_links" ADD CONSTRAINT "ownership_links_source_id_data_sources_id_fk" FOREIGN KEY ("source_id") REFERENCES "public"."data_sources"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "persons" ADD CONSTRAINT "persons_source_id_data_sources_id_fk" FOREIGN KEY ("source_id") REFERENCES "public"."data_sources"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "properties" ADD CONSTRAINT "properties_source_id_data_sources_id_fk" FOREIGN KEY ("source_id") REFERENCES "public"."data_sources"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-CREATE UNIQUE INDEX "data_sources_name_unique" ON "data_sources" USING btree ("name");
+CREATE UNIQUE INDEX "data_sources_name_unique" ON "data_sources" USING btree ("name");--> statement-breakpoint
+CREATE INDEX "ownership_links_person_id_idx" ON "ownership_links" USING btree ("person_id");--> statement-breakpoint
+CREATE INDEX "ownership_links_property_id_idx" ON "ownership_links" USING btree ("property_id");--> statement-breakpoint
+CREATE INDEX "ownership_links_source_id_idx" ON "ownership_links" USING btree ("source_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "ownership_links_identity_unique" ON "ownership_links" USING btree ("person_id","property_id","source_id","ownership_role");

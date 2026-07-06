@@ -1,5 +1,8 @@
+import { sql } from "drizzle-orm";
 import {
   boolean,
+  check,
+  index,
   integer,
   numeric,
   pgEnum,
@@ -11,7 +14,11 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
-export const sourceTypeEnum = pgEnum("source_type", ["mock", "official", "lawful_import"]);
+export const sourceTypeEnum = pgEnum("source_type", [
+  "mock",
+  "official",
+  "lawful_import",
+]);
 export const confidenceLabelEnum = pgEnum("confidence_label", [
   "official",
   "high",
@@ -42,8 +49,12 @@ export const dataSourceAssessments = pgTable("data_source_assessments", {
   provenanceNote: text("provenance_note").notNull(),
   allowedUseSummary: text("allowed_use_summary").notNull(),
   blockedUseSummary: text("blocked_use_summary").notNull(),
-  liveIntegrationEnabled: boolean("live_integration_enabled").notNull().default(false),
-  assessedAt: timestamp("assessed_at", { withTimezone: true }).defaultNow().notNull(),
+  liveIntegrationEnabled: boolean("live_integration_enabled")
+    .notNull()
+    .default(false),
+  assessedAt: timestamp("assessed_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
 });
 
 export const dataSources = pgTable(
@@ -58,10 +69,19 @@ export const dataSources = pgTable(
     allowedUseSummary: text("allowed_use_summary").notNull(),
     blockedUseSummary: text("blocked_use_summary").notNull(),
     retentionSummary: text("retention_summary"),
-    liveIntegrationEnabled: boolean("live_integration_enabled").notNull().default(false),
-    assessedAt: timestamp("assessed_at", { withTimezone: true }).defaultNow().notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    liveIntegrationEnabled: boolean("live_integration_enabled")
+      .notNull()
+      .default(false),
+    assessedAt: timestamp("assessed_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
   },
   (table) => [uniqueIndex("data_sources_name_unique").on(table.name)],
 );
@@ -70,10 +90,17 @@ export const persons = pgTable("persons", {
   id: serial("id").primaryKey(),
   displayName: varchar("display_name", { length: 160 }).notNull(),
   normalizedName: varchar("normalized_name", { length: 160 }).notNull(),
-  sourceId: integer("source_id").references(() => dataSources.id, { onDelete: "set null" }),
+  sourceId: integer("source_id").references(() => dataSources.id, {
+    onDelete: "set null",
+  }),
   sourceRecordId: varchar("source_record_id", { length: 160 }),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
 });
 
 export const properties = pgTable("properties", {
@@ -86,33 +113,67 @@ export const properties = pgTable("properties", {
   countryCode: varchar("country_code", { length: 2 }).notNull().default("DK"),
   cadastralIdentifier: varchar("cadastral_identifier", { length: 160 }),
   propertyIdentifier: varchar("property_identifier", { length: 160 }),
-  sourceId: integer("source_id").references(() => dataSources.id, { onDelete: "set null" }),
+  sourceId: integer("source_id").references(() => dataSources.id, {
+    onDelete: "set null",
+  }),
   sourceRecordId: varchar("source_record_id", { length: 160 }),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
 });
 
-export const ownershipLinks = pgTable("ownership_links", {
-  id: serial("id").primaryKey(),
-  personId: integer("person_id")
-    .notNull()
-    .references(() => persons.id, { onDelete: "cascade" }),
-  propertyId: integer("property_id")
-    .notNull()
-    .references(() => properties.id, { onDelete: "cascade" }),
-  sourceId: integer("source_id")
-    .notNull()
-    .references(() => dataSources.id, { onDelete: "restrict" }),
-  ownershipRole: ownershipRoleEnum("ownership_role").notNull().default("unknown"),
-  confidenceLabel: confidenceLabelEnum("confidence_label").notNull().default("unknown"),
-  confidenceScore: numeric("confidence_score", { precision: 5, scale: 4 }),
-  provenanceNote: text("provenance_note").notNull(),
-  sourceRecordId: varchar("source_record_id", { length: 160 }),
-  sourceUrl: text("source_url"),
-  retrievedAt: timestamp("retrieved_at", { withTimezone: true }).notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
-});
+export const ownershipLinks = pgTable(
+  "ownership_links",
+  {
+    id: serial("id").primaryKey(),
+    personId: integer("person_id")
+      .notNull()
+      .references(() => persons.id, { onDelete: "cascade" }),
+    propertyId: integer("property_id")
+      .notNull()
+      .references(() => properties.id, { onDelete: "cascade" }),
+    sourceId: integer("source_id")
+      .notNull()
+      .references(() => dataSources.id, { onDelete: "restrict" }),
+    ownershipRole: ownershipRoleEnum("ownership_role")
+      .notNull()
+      .default("unknown"),
+    confidenceLabel: confidenceLabelEnum("confidence_label")
+      .notNull()
+      .default("unknown"),
+    confidenceScore: numeric("confidence_score", { precision: 5, scale: 4 }),
+    provenanceNote: text("provenance_note").notNull(),
+    sourceRecordId: varchar("source_record_id", { length: 160 }),
+    sourceUrl: text("source_url"),
+    retrievedAt: timestamp("retrieved_at", { withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("ownership_links_person_id_idx").on(table.personId),
+    index("ownership_links_property_id_idx").on(table.propertyId),
+    index("ownership_links_source_id_idx").on(table.sourceId),
+    uniqueIndex("ownership_links_identity_unique").on(
+      table.personId,
+      table.propertyId,
+      table.sourceId,
+      table.ownershipRole,
+    ),
+    check(
+      "ownership_links_confidence_score_range",
+      sql`${table.confidenceScore} IS NULL OR (${table.confidenceScore} >= 0 AND ${table.confidenceScore} <= 1)`,
+    ),
+  ],
+);
 
 export const searchAuditLogs = pgTable("search_audit_logs", {
   id: serial("id").primaryKey(),
@@ -124,7 +185,9 @@ export const searchAuditLogs = pgTable("search_audit_logs", {
   status: searchAuditStatusEnum("status").notNull(),
   resultCount: integer("result_count").notNull().default(0),
   blockedReason: text("blocked_reason"),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
 });
 
 export type DataSourceAssessment = typeof dataSourceAssessments.$inferSelect;

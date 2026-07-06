@@ -275,7 +275,86 @@
           "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "ownership_links_person_id_idx": {
+          "name": "ownership_links_person_id_idx",
+          "columns": [
+            {
+              "expression": "person_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "ownership_links_property_id_idx": {
+          "name": "ownership_links_property_id_idx",
+          "columns": [
+            {
+              "expression": "property_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "ownership_links_source_id_idx": {
+          "name": "ownership_links_source_id_idx",
+          "columns": [
+            {
+              "expression": "source_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "ownership_links_identity_unique": {
+          "name": "ownership_links_identity_unique",
+          "columns": [
+            {
+              "expression": "person_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "property_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "source_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "ownership_role",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "ownership_links_person_id_persons_id_fk": {
           "name": "ownership_links_person_id_persons_id_fk",
@@ -320,7 +399,12 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "ownership_links_confidence_score_range": {
+          "name": "ownership_links_confidence_score_range",
+          "value": "\"confidence_score\" IS NULL OR (\"confidence_score\" >= 0 AND \"confidence_score\" <= 1)"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.persons": {
