@@ -1,0 +1,88 @@
+{
+  "id": "66b93f4a-cc55-44ea-b04d-377bdfad8fcb",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.data_source_assessments": {
+      "name": "data_source_assessments",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "source_name": {
+          "name": "source_name",
+          "type": "varchar(120)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "official_access_method": {
+          "name": "official_access_method",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "terms_url": {
+          "name": "terms_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provenance_note": {
+          "name": "provenance_note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "allowed_use_summary": {
+          "name": "allowed_use_summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "blocked_use_summary": {
+          "name": "blocked_use_summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "live_integration_enabled": {
+          "name": "live_integration_enabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "assessed_at": {
+          "name": "assessed_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
