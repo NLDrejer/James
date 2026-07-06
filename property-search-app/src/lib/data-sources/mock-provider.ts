@@ -1,23 +1,14 @@
+import { normalizeDanishAddress } from "@/lib/search/normalize-danish-address";
+import { normalizeDanishName } from "@/lib/search/normalize-danish-name";
+
 import type {
   PersonRecord,
+  PropertyOwnershipLink,
   PropertyRecord,
   PropertySearchProvider,
   PropertyWithLinks,
   SourceMetadata,
-  PropertyOwnershipLink,
 } from "./types";
-
-const normalize = (value: string) =>
-  value
-    .trim()
-    .toLocaleLowerCase("da-DK")
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/å/g, "aa")
-    .replace(/æ/g, "ae")
-    .replace(/ø/g, "oe")
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
 
 const source: SourceMetadata = {
   id: "mock-fixtures-2026-07",
@@ -37,13 +28,13 @@ const persons: PersonRecord[] = [
   {
     id: "mock-person-soren-agaard",
     displayName: "Søren Ågård",
-    normalizedName: normalize("Søren Ågård"),
+    normalizedName: normalizeDanishName("Søren Ågård"),
     sourceRecordId: "fixture-person-001",
   },
   {
     id: "mock-person-aase-oestergaard",
     displayName: "Åse Østergaard",
-    normalizedName: normalize("Åse Østergaard"),
+    normalizedName: normalizeDanishName("Åse Østergaard"),
     sourceRecordId: "fixture-person-002",
   },
 ];
@@ -52,7 +43,7 @@ const properties: PropertyRecord[] = [
   {
     id: "mock-property-odense-001",
     addressLine1: "Havnegade 12",
-    normalizedAddress: normalize("Havnegade 12, 5000 Odense"),
+    normalizedAddress: normalizeDanishAddress("Havnegade 12, 5000 Odense"),
     postalCode: "5000",
     municipality: "Odense",
     countryCode: "DK",
@@ -63,7 +54,7 @@ const properties: PropertyRecord[] = [
   {
     id: "mock-property-aarhus-001",
     addressLine1: "Bøgelunden 4",
-    normalizedAddress: normalize("Bøgelunden 4, 8000 Aarhus C"),
+    normalizedAddress: normalizeDanishAddress("Bøgelunden 4, 8000 Aarhus C"),
     postalCode: "8000",
     municipality: "Aarhus",
     countryCode: "DK",
@@ -114,7 +105,7 @@ export const mockPropertyProvider: PropertySearchProvider = {
       return [];
     }
 
-    const normalizedQuery = normalize(trimmedQuery);
+    const normalizedQuery = normalizeDanishName(trimmedQuery);
 
     return ownershipLinks.filter((link) => link.person.normalizedName.includes(normalizedQuery));
   },
