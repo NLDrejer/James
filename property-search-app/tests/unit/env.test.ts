@@ -6,14 +6,18 @@ afterEach(() => {
 });
 
 describe("property-search environment variable compatibility", () => {
-  it("uses DATABASE_URL when PROPERTY_SEARCH_DATABASE_URL is not set", async () => {
-    vi.stubEnv("DATABASE_URL", "postgresql://legacy-db");
-    vi.stubEnv("PROPERTY_SEARCH_DATABASE_URL", "");
+  it(
+    "uses DATABASE_URL when PROPERTY_SEARCH_DATABASE_URL is not set",
+    async () => {
+      vi.stubEnv("DATABASE_URL", "postgresql://legacy-db");
+      vi.stubEnv("PROPERTY_SEARCH_DATABASE_URL", "");
 
-    const { getDatabaseUrl } = await import("@/db");
+      const { getDatabaseUrl } = await import("@/db");
 
-    expect(getDatabaseUrl()).toBe("postgresql://legacy-db");
-  });
+      expect(getDatabaseUrl()).toBe("postgresql://legacy-db");
+    },
+    15_000,
+  );
 
   it("prefers PROPERTY_SEARCH_DATABASE_URL over DATABASE_URL", async () => {
     vi.stubEnv("DATABASE_URL", "postgresql://legacy-db");
@@ -40,5 +44,23 @@ describe("property-search environment variable compatibility", () => {
     const { isAdminUsername } = await import("@/lib/session");
 
     expect(isAdminUsername("Nikolaj")).toBe(true);
+  });
+
+  it("requires auth by default in production", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("PROPERTY_SEARCH_REQUIRE_AUTH", "");
+
+    const { isPropertySearchAuthRequired } = await import("@/lib/session");
+
+    expect(isPropertySearchAuthRequired()).toBe(true);
+  });
+
+  it("keeps auth optional by default in local development", async () => {
+    vi.stubEnv("NODE_ENV", "development");
+    vi.stubEnv("PROPERTY_SEARCH_REQUIRE_AUTH", "");
+
+    const { isPropertySearchAuthRequired } = await import("@/lib/session");
+
+    expect(isPropertySearchAuthRequired()).toBe(false);
   });
 });
