@@ -1,13 +1,15 @@
-import { describe, expect, it, beforeEach } from "vitest";
+import { describe, expect, it, beforeEach, afterEach, vi } from "vitest";
 
 import { GET } from "@/app/api/search/route";
 import { resetSearchApiRateLimit } from "@/lib/search/rate-limit";
 import { searchAuditStore } from "@/lib/search/search-audit-log";
+import { createSignedSessionUsername } from "@/lib/session";
 
-const requestSearch = (query: string, ip = "203.0.113.10") =>
+const requestSearch = (query: string, ip = "203.0.113.10", cookie?: string) =>
   GET(
     new Request(`https://property-search.test/api/search?q=${encodeURIComponent(query)}`, {
       headers: {
+        ...(cookie ? { cookie } : {}),
         "x-forwarded-for": ip,
         "user-agent": "vitest-search-api",
       },
@@ -18,6 +20,45 @@ describe("GET /api/search", () => {
   beforeEach(() => {
     resetSearchApiRateLimit();
     searchAuditStore.clear();
+    vi.stubEnv("PROPERTY_SEARCH_REQUIRE_AUTH", "");
+    vi.stubEnv("PROPERTY_SEARCH_SESSION_SECRET", "test-secret");
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("requires an authenticated session when production protection is enabled", async () => {
+    vi.stubEnv("PROPERTY_SEARCH_REQUIRE_AUTH", "true");
+
+    const response = await requestSearch("Søren Ågård");
+    const body = await response.json();
+
+    expect(response.status).toBe(401);
+    expect(body).toEqual({
+      status: "unauthorized",
+      message: "Authentication is required for property search.",
+      results: [],
+    });
+    expect(searchAuditStore.entries).toEqual([]);
+  });
+
+  it("allows authenticated search when production protection is enabled", async () => {
+    vi.stubEnv("PROPERTY_SEARCH_REQUIRE_AUTH", "true");
+    const cookie = `property_search_session=${createSignedSessionUsername("nikolaj")}`;
+
+    const response = await requestSearch("Søren Ågård", "203.0.113.21", cookie);
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body).toMatchObject({
+      status: "success",
+      normalizedQuery: "soeren aagaard",
+    });
+    expect(searchAuditStore.entries[0]).toMatchObject({
+      requesterSessionId: "nikolaj",
+      status: "success",
+    });
   });
 
   it("returns 400 for invalid queries and writes a privacy-preserving audit entry", async () => {

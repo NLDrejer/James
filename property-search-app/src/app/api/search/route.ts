@@ -3,6 +3,7 @@ import { normalizeDanishName } from "@/lib/search/normalize-danish-name";
 import { checkSearchApiRateLimit } from "@/lib/search/rate-limit";
 import { createSearchAuditEntry, searchAuditStore } from "@/lib/search/search-audit-log";
 import { searchPropertiesByName } from "@/lib/search/search-service";
+import { getSessionUsernameFromCookieHeader, isPropertySearchAuthRequired } from "@/lib/session";
 
 const requesterIpFrom = (request: Request) => {
   const forwardedFor = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
@@ -32,14 +33,27 @@ export async function GET(request: Request) {
   const normalizedQuery = normalizeDanishName(query);
   const requesterIp = requesterIpFrom(request);
   const userAgent = request.headers.get("user-agent");
+  const requesterSessionId = getSessionUsernameFromCookieHeader(request.headers.get("cookie"));
 
-  const rateLimit = checkSearchApiRateLimit({ key: requesterIp });
+  if (isPropertySearchAuthRequired() && !requesterSessionId) {
+    return jsonResponse(
+      {
+        status: "unauthorized",
+        message: "Authentication is required for property search.",
+        results: [],
+      },
+      401,
+    );
+  }
+
+  const rateLimit = checkSearchApiRateLimit({ key: requesterSessionId ?? requesterIp });
 
   if (!rateLimit.allowed) {
     searchAuditStore.record(
       createSearchAuditEntry({
         query,
         normalizedQuery,
+        requesterSessionId,
         requesterIp,
         userAgent,
         status: "rate_limited",
@@ -68,6 +82,7 @@ export async function GET(request: Request) {
     createSearchAuditEntry({
       query,
       normalizedQuery: searchResponse.normalizedQuery,
+      requesterSessionId,
       requesterIp,
       userAgent,
       status: searchResponse.status,
