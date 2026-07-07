@@ -71,10 +71,28 @@ Useful scripts:
 - `npm run db:studio` — inspect the database.
 - `npm run db:push` — push schema changes directly for throwaway experiments only.
 
+## Retention and deletion
+
+Default MVP retention policy before live sources are enabled:
+
+- Search audit metadata: keep for 90 days, then purge. Audit entries store query hashes, requester/session metadata hashes, status, counts, and timestamps — never raw search text.
+- Lawful imports: keep for up to 365 days unless a source-specific agreement requires a shorter window.
+- Mock fixtures: disposable demo data. They can be deleted or regenerated at any time and must stay separate from future lawful imports.
+
+Operational commands:
+
+```bash
+npm run retention:audit:dry-run
+npm run retention:audit:purge
+npm run retention:imports:delete -- --source <source-id> --batch <batch-id>
+```
+
+For imported data deletion, remove dependent ownership links first, then property rows, then person rows. Retain the source/provenance metadata needed to explain what was deleted, why it was lawful to import, and which retention rule applied. Replace mock fixtures only with sources documented in `docs/data-source-assessment.md`, with live integrations disabled until the production gate is approved.
+
 ## Safety rules
 
 - Do not scrape OIS.dk, Tinglysningen, or people-search websites.
 - Do not ship unauthenticated public production access to person-to-property lookup.
-- Do not store CPR numbers or unnecessary personal identifiers.
+- Do not store CPR numbers, raw search text, or unnecessary personal identifiers.
 - Every future result must include source/provenance, confidence, and retrieval time.
 - Searches must be rate-limited and audited before real data is used.

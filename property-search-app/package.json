@@ -14,6 +14,9 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
+    "retention:audit:dry-run": "node scripts/retention-audit.mjs --dry-run",
+    "retention:audit:purge": "node scripts/retention-audit.mjs --purge",
+    "retention:imports:delete": "node scripts/retention-imports.mjs",
     "lint:styles": "stylelint \"src/**/*.css\""
   },
   "dependencies": {
