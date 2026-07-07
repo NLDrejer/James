@@ -8,6 +8,13 @@
       "when": 1783333728511,
       "tag": "0000_faithful_morg",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1783373548014,
+      "tag": "0001_chief_azazel",
+      "breakpoints": true
     }
   ]
 }
