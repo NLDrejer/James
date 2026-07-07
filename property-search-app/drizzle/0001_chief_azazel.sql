@@ -83,4 +83,6 @@ CREATE UNIQUE INDEX "data_sources_name_unique" ON "data_sources" USING btree ("n
 CREATE INDEX "ownership_links_person_id_idx" ON "ownership_links" USING btree ("person_id");--> statement-breakpoint
 CREATE INDEX "ownership_links_property_id_idx" ON "ownership_links" USING btree ("property_id");--> statement-breakpoint
 CREATE INDEX "ownership_links_source_id_idx" ON "ownership_links" USING btree ("source_id");--> statement-breakpoint
+CREATE INDEX "persons_source_id_idx" ON "persons" USING btree ("source_id");--> statement-breakpoint
+CREATE INDEX "properties_source_id_idx" ON "properties" USING btree ("source_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "ownership_links_identity_unique" ON "ownership_links" USING btree ("person_id","property_id","source_id","ownership_role");

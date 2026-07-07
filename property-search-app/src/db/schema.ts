@@ -86,45 +86,53 @@ export const dataSources = pgTable(
   (table) => [uniqueIndex("data_sources_name_unique").on(table.name)],
 );
 
-export const persons = pgTable("persons", {
-  id: serial("id").primaryKey(),
-  displayName: varchar("display_name", { length: 160 }).notNull(),
-  normalizedName: varchar("normalized_name", { length: 160 }).notNull(),
-  sourceId: integer("source_id").references(() => dataSources.id, {
-    onDelete: "set null",
-  }),
-  sourceRecordId: varchar("source_record_id", { length: 160 }),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
-    .defaultNow()
-    .notNull()
-    .$onUpdate(() => new Date()),
-});
+export const persons = pgTable(
+  "persons",
+  {
+    id: serial("id").primaryKey(),
+    displayName: varchar("display_name", { length: 160 }).notNull(),
+    normalizedName: varchar("normalized_name", { length: 160 }).notNull(),
+    sourceId: integer("source_id").references(() => dataSources.id, {
+      onDelete: "set null",
+    }),
+    sourceRecordId: varchar("source_record_id", { length: 160 }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [index("persons_source_id_idx").on(table.sourceId)],
+);
 
-export const properties = pgTable("properties", {
-  id: serial("id").primaryKey(),
-  addressLine1: varchar("address_line_1", { length: 220 }).notNull(),
-  addressLine2: varchar("address_line_2", { length: 220 }),
-  normalizedAddress: varchar("normalized_address", { length: 260 }).notNull(),
-  postalCode: varchar("postal_code", { length: 4 }).notNull(),
-  municipality: varchar("municipality", { length: 120 }).notNull(),
-  countryCode: varchar("country_code", { length: 2 }).notNull().default("DK"),
-  cadastralIdentifier: varchar("cadastral_identifier", { length: 160 }),
-  propertyIdentifier: varchar("property_identifier", { length: 160 }),
-  sourceId: integer("source_id").references(() => dataSources.id, {
-    onDelete: "set null",
-  }),
-  sourceRecordId: varchar("source_record_id", { length: 160 }),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
-    .defaultNow()
-    .notNull()
-    .$onUpdate(() => new Date()),
-});
+export const properties = pgTable(
+  "properties",
+  {
+    id: serial("id").primaryKey(),
+    addressLine1: varchar("address_line_1", { length: 220 }).notNull(),
+    addressLine2: varchar("address_line_2", { length: 220 }),
+    normalizedAddress: varchar("normalized_address", { length: 260 }).notNull(),
+    postalCode: varchar("postal_code", { length: 4 }).notNull(),
+    municipality: varchar("municipality", { length: 120 }).notNull(),
+    countryCode: varchar("country_code", { length: 2 }).notNull().default("DK"),
+    cadastralIdentifier: varchar("cadastral_identifier", { length: 160 }),
+    propertyIdentifier: varchar("property_identifier", { length: 160 }),
+    sourceId: integer("source_id").references(() => dataSources.id, {
+      onDelete: "set null",
+    }),
+    sourceRecordId: varchar("source_record_id", { length: 160 }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [index("properties_source_id_idx").on(table.sourceId)],
+);
 
 export const ownershipLinks = pgTable(
   "ownership_links",

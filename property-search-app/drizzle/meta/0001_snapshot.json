@@ -456,7 +456,23 @@
           "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "persons_source_id_idx": {
+          "name": "persons_source_id_idx",
+          "columns": [
+            {
+              "expression": "source_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "persons_source_id_data_sources_id_fk": {
           "name": "persons_source_id_data_sources_id_fk",
@@ -564,7 +580,23 @@
           "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "properties_source_id_idx": {
+          "name": "properties_source_id_idx",
+          "columns": [
+            {
+              "expression": "source_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "properties_source_id_data_sources_id_fk": {
           "name": "properties_source_id_data_sources_id_fk",
