@@ -18,7 +18,9 @@ complete and approved.
 
 ## Local development
 
-1. Copy the env file and fill in local values if you need database-backed work:
+1. Copy the env file and fill in local values if you need database-backed work.
+   The property app uses `PROPERTY_SEARCH_*` names so its settings do not collide
+   with the survey app's `JAMES_*` variables in the same repo:
 
    ```bash
    cp .env.example .env.local
@@ -65,13 +67,45 @@ lawful-replacement workflow.
 
 ## Environment variables
 
+See `.env.example` for the canonical local + Vercel shape.
+
 - `PROPERTY_SEARCH_DATABASE_URL` — preferred Postgres connection string for this app.
 - `DATABASE_URL` — compatibility fallback for Neon/Vercel integrations.
 - `PROPERTY_SEARCH_SESSION_SECRET` — preferred session signing secret. Required in production.
 - `SESSION_SECRET` — compatibility fallback.
 - `PROPERTY_SEARCH_ADMIN_USERNAMES` — comma-separated admin usernames for future audit/admin screens.
 - `PROPERTY_SEARCH_ADMIN_USERNAME` — single admin username fallback.
-- `PROPERTY_SEARCH_ENABLE_LIVE_SOURCES` — defaults to disabled; do not enable until the data-source assessment production gate is satisfied.
+- `PROPERTY_SEARCH_REQUIRE_AUTH` — when unset, auth defaults to `false` in local development and `true` in production. Set it explicitly to `true` on Vercel.
+- `PROPERTY_SEARCH_ENABLE_LIVE_SOURCES` — defaults to disabled; keep it `false` in production until the data-source assessment production gate is satisfied and approved.
+
+## Deploying on Vercel
+
+`property-search-app` is a subdirectory app in this repo. Configure the Vercel
+project to build from that subdirectory directly:
+
+- **Root Directory:** `property-search-app`
+- **Install Command:** `npm install`
+- **Build Command:** `npm run build`
+- **Output Directory:** `.next`
+
+Do **not** add `cd property-search-app` to the install/build commands when the
+root directory is already set to `property-search-app`, or Vercel will look for
+the app in the wrong place.
+
+### Vercel environment variables
+
+Set these in Vercel for Preview/Production as appropriate:
+
+- `PROPERTY_SEARCH_DATABASE_URL` — preferred app-specific database URL.
+- `PROPERTY_SEARCH_SESSION_SECRET` — required in production for signed sessions.
+- `PROPERTY_SEARCH_ADMIN_USERNAMES` or `PROPERTY_SEARCH_ADMIN_USERNAME` — optional admin allowlist.
+- `PROPERTY_SEARCH_REQUIRE_AUTH=true` — keep real person/property lookup behind auth in production.
+- `PROPERTY_SEARCH_ENABLE_LIVE_SOURCES=false` — safe default; do not turn this on until `docs/data-source-assessment.md` is fully approved for the source you plan to enable.
+
+If your Vercel Postgres or Neon integration only provides generic names such as
+`DATABASE_URL` or `SESSION_SECRET`, the app still supports them as compatibility
+fallbacks. Prefer the `PROPERTY_SEARCH_*` names for this app so deployment
+settings stay separate from the survey app.
 
 ## Database/Drizzle
 

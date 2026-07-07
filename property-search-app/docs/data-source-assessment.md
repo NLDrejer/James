@@ -40,6 +40,10 @@ A source cannot be enabled unless all of the following are true:
 ## MVP safe-mode rules
 
 - `PROPERTY_SEARCH_ENABLE_LIVE_SOURCES` defaults to `false`.
+- In Vercel Preview/Production, keep `PROPERTY_SEARCH_ENABLE_LIVE_SOURCES=false`
+  until a source-specific production gate is approved.
+- In Vercel Preview/Production, set `PROPERTY_SEARCH_REQUIRE_AUTH=true` so any
+  real person/property lookup remains access-controlled.
 - Mock fixtures must be visibly fake and must not include CPR numbers or real sensitive personal identifiers.
 - User-provided imports must include provenance metadata before use.
 - UI copy must state that source/provenance/confidence are mandatory and that live official sources are disabled.
