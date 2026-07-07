@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import crypto from "node:crypto";
 
-const COOKIE_NAME = "property_search_session";
+export const PROPERTY_SEARCH_SESSION_COOKIE_NAME = "property_search_session";
 
 export function getSessionSecret(): string {
   const secret =
@@ -34,9 +34,41 @@ function verify(signed: string): string | null {
   return value;
 }
 
+export function createSignedSessionUsername(username: string): string {
+  return sign(username);
+}
+
+function getCookieValue(cookieHeader: string | null, name: string): string | null {
+  if (!cookieHeader) return null;
+
+  const cookie = cookieHeader
+    .split(";")
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(`${name}=`));
+
+  if (!cookie) return null;
+  return decodeURIComponent(cookie.slice(name.length + 1));
+}
+
+export function getSessionUsernameFromCookieHeader(cookieHeader: string | null): string | null {
+  const raw = getCookieValue(cookieHeader, PROPERTY_SEARCH_SESSION_COOKIE_NAME);
+  if (!raw) return null;
+  return verify(raw);
+}
+
+export function isPropertySearchAuthRequired(): boolean {
+  const configured = process.env.PROPERTY_SEARCH_REQUIRE_AUTH;
+
+  if (configured) {
+    return ["1", "true", "yes", "on"].includes(configured.trim().toLowerCase());
+  }
+
+  return process.env.NODE_ENV === "production";
+}
+
 export async function setSessionUsername(username: string) {
   const store = await cookies();
-  store.set(COOKIE_NAME, sign(username), {
+  store.set(PROPERTY_SEARCH_SESSION_COOKIE_NAME, sign(username), {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
@@ -47,14 +79,14 @@ export async function setSessionUsername(username: string) {
 
 export async function getSessionUsername(): Promise<string | null> {
   const store = await cookies();
-  const raw = store.get(COOKIE_NAME)?.value;
+  const raw = store.get(PROPERTY_SEARCH_SESSION_COOKIE_NAME)?.value;
   if (!raw) return null;
   return verify(raw);
 }
 
 export async function clearSession() {
   const store = await cookies();
-  store.delete(COOKIE_NAME);
+  store.delete(PROPERTY_SEARCH_SESSION_COOKIE_NAME);
 }
 
 function getAdminUsernames(): string[] {
