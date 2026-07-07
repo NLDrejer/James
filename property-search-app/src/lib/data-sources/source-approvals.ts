@@ -58,6 +58,13 @@ const requireNonEmpty = (value: string, fieldName: string) => {
   }
 };
 
+const requireResolved = (value: string, fieldName: string) => {
+  requireNonEmpty(value, fieldName);
+  if (/^TODO\b/i.test(value.trim())) {
+    throw new Error(`${fieldName} still contains a TODO placeholder and cannot be approved.`);
+  }
+};
+
 export function validateSourceApproval(record: SourceApprovalRecord): SourceApprovalRecord {
   requireNonEmpty(record.sourceId, "sourceId");
   requireNonEmpty(record.sourceName, "sourceName");
@@ -70,10 +77,15 @@ export function validateSourceApproval(record: SourceApprovalRecord): SourceAppr
     return record;
   }
 
+  requireResolved(record.sourceAccess.method, "sourceAccess.method");
+  requireResolved(record.sourceAccess.termsUrl, "sourceAccess.termsUrl");
+  requireResolved(record.sourceAccess.authentication, "sourceAccess.authentication");
+  requireResolved(record.sourceAccess.rateLimitSummary, "sourceAccess.rateLimitSummary");
+
   for (const field of requiredApprovedFields) {
     const value = record[field];
     if (typeof value === "string") {
-      requireNonEmpty(value, field);
+      requireResolved(value, field);
     }
   }
 
@@ -100,7 +112,12 @@ export function isSourceLiveIntegrationEnabled(
   record: SourceApprovalRecord,
   env: NodeJS.ProcessEnv = process.env,
 ): boolean {
-  const approval = validateSourceApproval(record);
+  let approval: SourceApprovalRecord;
+  try {
+    approval = validateSourceApproval(record);
+  } catch {
+    return false;
+  }
 
   if (approval.status !== "approved") {
     return false;
