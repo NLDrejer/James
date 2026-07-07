@@ -80,17 +80,46 @@ See `.env.example` for the canonical local + Vercel shape.
 
 ## Deploying on Vercel
 
-`property-search-app` is a subdirectory app in this repo. Configure the Vercel
-project to build from that subdirectory directly:
+`property-search-app` is deployed as its own Vercel project so it does not replace
+or break the existing survey app deployment.
 
+Current production surfaces:
+
+- Survey app: https://james-sooty.vercel.app
+- Property search app: https://james-property-search.vercel.app
+
+Vercel project settings for the property-search project:
+
+- **Project:** `james-property-search`
 - **Root Directory:** `property-search-app`
-- **Install Command:** `npm install`
+- **Install Command:** `npm ci`
 - **Build Command:** `npm run build`
 - **Output Directory:** `.next`
+- **Ignored Build Step:** `git diff --quiet HEAD^ HEAD -- property-search-app .github/workflows/ci.yml`
 
 Do **not** add `cd property-search-app` to the install/build commands when the
 root directory is already set to `property-search-app`, or Vercel will look for
-the app in the wrong place.
+the app in the wrong place. Do not point the existing `james` survey project at
+`property-search-app`; keep that project rooted at `survey-app` with ignored
+build step `git diff --quiet HEAD^ HEAD -- survey-app .github/workflows/ci.yml`.
+
+### Deployment smoke check
+
+After a production deploy, run:
+
+```bash
+npm run smoke:deployment -- https://james-property-search.vercel.app
+```
+
+The smoke check verifies the landing page, `/search`, and that the production
+search API requires authentication before sensitive person-to-property lookup.
+
+### Rollback
+
+If the property deployment breaks, use Vercel to promote the previous READY
+deployment for the `james-property-search` project. If the survey app is affected,
+restore the original `james` project settings to `survey-app` root directory,
+`npm ci`, `npm run build`, and `.next`, then redeploy `main`.
 
 ### Vercel environment variables
 

@@ -20,6 +20,7 @@
     "retention:audit:dry-run": "node scripts/retention-audit.mjs --dry-run",
     "retention:audit:purge": "node scripts/retention-audit.mjs --purge",
     "retention:imports:delete": "node scripts/retention-imports.mjs",
+    "smoke:deployment": "node scripts/smoke-deployment.mjs",
     "lint:styles": "stylelint \"src/**/*.css\""
   },
   "dependencies": {
