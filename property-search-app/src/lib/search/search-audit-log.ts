@@ -56,9 +56,24 @@ class InMemorySearchAuditStore {
     this.entries.push(entry);
   }
 
+  listRecent(limit = 50): SearchAuditEntry[] {
+    return [...this.entries]
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice(0, limit);
+  }
+
   clear() {
     this.entries.splice(0, this.entries.length);
   }
 }
 
-export const searchAuditStore = new InMemorySearchAuditStore();
+declare global {
+  // Keep the in-memory MVP audit sink shared across Next route/page bundles in dev/test.
+  // Production can replace this boundary with a durable database-backed implementation.
+  var __propertySearchAuditStore: InMemorySearchAuditStore | undefined;
+}
+
+export const searchAuditStore =
+  globalThis.__propertySearchAuditStore ?? new InMemorySearchAuditStore();
+
+globalThis.__propertySearchAuditStore = searchAuditStore;
