@@ -47,6 +47,22 @@ npm run build
 npm run test:e2e
 ```
 
+## Fixture import/export
+
+The MVP ships with a fake/anonymized Danish property fixture JSON at
+`src/lib/data-sources/fixtures/mock-property-fixtures.json`.
+
+Useful commands:
+
+```bash
+npm run fixtures:export
+npm run fixtures:import -- ./path/to/reviewed-fixtures.json
+```
+
+Imports are validated before they are written. Any ownership record missing
+source metadata is rejected. See `docs/property-fixture-tooling.md` for the
+lawful-replacement workflow.
+
 ## Environment variables
 
 - `PROPERTY_SEARCH_DATABASE_URL` — preferred Postgres connection string for this app.
