@@ -7,6 +7,7 @@ import {
   persons,
   properties,
   searchAuditLogs,
+  sourceImportBatches,
 } from "@/db/schema";
 
 const columnNames = (table: Parameters<typeof getTableColumns>[0]) =>
@@ -78,5 +79,22 @@ describe("property search database schema", () => {
     );
     expect(auditColumns).not.toContain("query");
     expect(auditColumns).not.toContain("rawQuery");
+  });
+
+  it("records lawful import batches with approval and retention provenance", () => {
+    expect(columnNames(sourceImportBatches)).toEqual(
+      expect.arrayContaining([
+        "sourceId",
+        "sourceKey",
+        "approvalReference",
+        "legalBasis",
+        "importedBy",
+        "recordCount",
+        "retentionExpiresAt",
+        "sourceTermsVersion",
+        "rawInputHash",
+        "status",
+      ]),
+    );
   });
 });

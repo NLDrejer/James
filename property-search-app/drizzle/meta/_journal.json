@@ -15,6 +15,13 @@
       "when": 1783373548014,
       "tag": "0001_chief_azazel",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1783456772536,
+      "tag": "0002_broken_psylocke",
+      "breakpoints": true
     }
   ]
 }

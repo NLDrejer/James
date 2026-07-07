@@ -40,6 +40,12 @@ export const searchAuditStatusEnum = pgEnum("search_audit_status", [
   "invalid",
   "error",
 ]);
+export const sourceImportBatchStatusEnum = pgEnum("source_import_batch_status", [
+  "validated",
+  "imported",
+  "rejected",
+  "deleted",
+]);
 
 export const dataSourceAssessments = pgTable("data_source_assessments", {
   id: serial("id").primaryKey(),
@@ -84,6 +90,38 @@ export const dataSources = pgTable(
       .$onUpdate(() => new Date()),
   },
   (table) => [uniqueIndex("data_sources_name_unique").on(table.name)],
+);
+
+export const sourceImportBatches = pgTable(
+  "source_import_batches",
+  {
+    id: serial("id").primaryKey(),
+    sourceId: integer("source_id").references(() => dataSources.id, {
+      onDelete: "set null",
+    }),
+    sourceKey: varchar("source_key", { length: 80 }).notNull(),
+    approvalReference: text("approval_reference").notNull(),
+    legalBasis: text("legal_basis").notNull(),
+    importedBy: varchar("imported_by", { length: 160 }).notNull(),
+    recordCount: integer("record_count").notNull().default(0),
+    retentionExpiresAt: timestamp("retention_expires_at", { withTimezone: true }).notNull(),
+    sourceTermsVersion: text("source_terms_version").notNull(),
+    rawInputHash: varchar("raw_input_hash", { length: 128 }).notNull(),
+    status: sourceImportBatchStatusEnum("status").notNull().default("validated"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("source_import_batches_source_id_idx").on(table.sourceId),
+    index("source_import_batches_source_key_idx").on(table.sourceKey),
+    uniqueIndex("source_import_batches_raw_input_hash_unique").on(table.rawInputHash),
+    check("source_import_batches_record_count_non_negative", sql`${table.recordCount} >= 0`),
+  ],
 );
 
 export const persons = pgTable(
@@ -203,6 +241,8 @@ export type NewDataSourceAssessment = typeof dataSourceAssessments.$inferInsert;
 
 export type DataSource = typeof dataSources.$inferSelect;
 export type NewDataSource = typeof dataSources.$inferInsert;
+export type SourceImportBatch = typeof sourceImportBatches.$inferSelect;
+export type NewSourceImportBatch = typeof sourceImportBatches.$inferInsert;
 export type Person = typeof persons.$inferSelect;
 export type NewPerson = typeof persons.$inferInsert;
 export type Property = typeof properties.$inferSelect;
