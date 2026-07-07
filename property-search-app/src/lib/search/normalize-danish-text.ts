@@ -5,7 +5,7 @@ const DANISH_CHARACTER_REPLACEMENTS: Record<string, string> = {
 };
 
 export const normalizeDanishText = (value: string) => {
-  let normalized = value.trim().toLocaleLowerCase("da-DK");
+  let normalized = value.trim().toLocaleLowerCase("da-DK").normalize("NFC");
 
   for (const [danishCharacter, replacement] of Object.entries(DANISH_CHARACTER_REPLACEMENTS)) {
     normalized = normalized.replaceAll(danishCharacter, replacement);

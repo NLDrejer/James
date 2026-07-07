@@ -6,6 +6,7 @@ import { normalizeDanishName } from "@/lib/search/normalize-danish-name";
 describe("Danish normalization helpers", () => {
   it("normalizes Danish names while preserving searchable æ/ø/å variants", () => {
     expect(normalizeDanishName("  Søren   Ågård  ")).toBe("soeren aagaard");
+    expect(normalizeDanishName("A\u030ase A\u030agaard")).toBe("aase aagaard");
     expect(normalizeDanishName("ÅSE ØSTERGAARD")).toBe("aase oestergaard");
     expect(normalizeDanishName("Niels-Peter Ærø")).toBe("niels peter aeroe");
   });

@@ -25,6 +25,20 @@ describe("property search service", () => {
       results: [],
       reason: "bulk_lookup_pattern",
     });
+    await expect(
+      searchPropertiesByName({ query: "Søren Åse Niels Hansen Petersen", provider: mockPropertyProvider }),
+    ).resolves.toMatchObject({
+      status: "blocked",
+      results: [],
+      reason: "overly_broad_query",
+    });
+    await expect(
+      searchPropertiesByName({ query: "Søren Åse Niels Peter Lars", provider: mockPropertyProvider }),
+    ).resolves.toMatchObject({
+      status: "blocked",
+      results: [],
+      reason: "suspicious_high_volume_query",
+    });
   });
 
   it("returns Danish-only results with provenance, confidence, and no certainty language", async () => {
@@ -34,7 +48,7 @@ describe("property search service", () => {
     expect(response.normalizedQuery).toBe("soeren aagaard");
     expect(response.results).toHaveLength(1);
     expect(response.results[0]).toMatchObject({
-      matchExplanation: "Navnet matcher en fake/anonymiseret kildepost; relationen er ikke identitetsbevis.",
+      matchExplanation: "Navnet matcher en kildepost; relationen er ikke identitetsbevis.",
       confidenceLabel: "high",
       source: {
         sourceType: "mock",

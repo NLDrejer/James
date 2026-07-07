@@ -45,11 +45,17 @@ const isSuspiciousHighVolumeQuery = (normalizedQuery: string) => {
   return tokens.length > 4 || normalizedQuery.length > 80;
 };
 
+const containsBroadDanishName = (normalizedQuery: string) =>
+  normalizedQuery
+    .split(" ")
+    .filter(Boolean)
+    .some((token) => COMMON_BROAD_DANISH_NAMES.has(token));
+
 const toSearchResult = (link: PropertyOwnershipLink): PropertySearchResult => ({
   ...link,
   ambiguityLabel: link.confidenceLabel === "high" ? "possible_match" : "ambiguous_name",
   matchExplanation:
-    "Navnet matcher en fake/anonymiseret kildepost; relationen er ikke identitetsbevis.",
+    "Navnet matcher en kildepost; relationen er ikke identitetsbevis.",
 });
 
 export const searchPropertiesByName = async ({
@@ -74,7 +80,7 @@ export const searchPropertiesByName = async ({
     return { status: "blocked", query, normalizedQuery, reason: "bulk_lookup_pattern", results: [] };
   }
 
-  if (COMMON_BROAD_DANISH_NAMES.has(normalizedQuery)) {
+  if (containsBroadDanishName(normalizedQuery)) {
     return { status: "blocked", query, normalizedQuery, reason: "overly_broad_query", results: [] };
   }
 
