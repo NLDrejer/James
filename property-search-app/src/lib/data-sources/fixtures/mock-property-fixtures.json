@@ -1,0 +1,127 @@
+{
+  "source": {
+    "id": "mock-fixtures-2026-07",
+    "name": "Mock Danish Property Fixtures",
+    "sourceType": "mock",
+    "provenanceNote": "Contains deliberately fake/anonymized Danish demo records for local development only.",
+    "allowedUseSummary": "Local development, demos, and automated tests only.",
+    "blockedUseSummary": "Not official data. Do not use for real ownership decisions, scraping, enrichment, or public claims.",
+    "retentionSummary": "Fixtures can be deleted at any time and must be replaced by documented lawful imports.",
+    "liveIntegrationEnabled": false,
+    "retrievedAt": "2026-07-06T00:00:00.000Z"
+  },
+  "persons": [
+    {
+      "id": "mock-person-soren-agaard",
+      "displayName": "Søren Ågård",
+      "normalizedName": "soeren aagaard",
+      "sourceRecordId": "fixture-person-001"
+    },
+    {
+      "id": "mock-person-aase-oestergaard",
+      "displayName": "Åse Østergaard",
+      "normalizedName": "aase oestergaard",
+      "sourceRecordId": "fixture-person-002"
+    }
+  ],
+  "properties": [
+    {
+      "id": "mock-property-odense-001",
+      "addressLine1": "Havnegade 12",
+      "normalizedAddress": "havnegade 12 5000 odense",
+      "postalCode": "5000",
+      "municipality": "Odense",
+      "countryCode": "DK",
+      "cadastralIdentifier": "Demo Matrikel 12a",
+      "propertyIdentifier": "MOCK-DK-ODENSE-001",
+      "sourceRecordId": "fixture-property-001"
+    },
+    {
+      "id": "mock-property-aarhus-001",
+      "addressLine1": "Bøgelunden 4",
+      "normalizedAddress": "boegelunden 4 8000 aarhus c",
+      "postalCode": "8000",
+      "municipality": "Aarhus",
+      "countryCode": "DK",
+      "cadastralIdentifier": "Demo Matrikel 4b",
+      "propertyIdentifier": "MOCK-DK-AARHUS-001",
+      "sourceRecordId": "fixture-property-002"
+    }
+  ],
+  "ownershipLinks": [
+    {
+      "id": "mock-link-soren-odense",
+      "person": {
+        "id": "mock-person-soren-agaard",
+        "displayName": "Søren Ågård",
+        "normalizedName": "soeren aagaard",
+        "sourceRecordId": "fixture-person-001"
+      },
+      "property": {
+        "id": "mock-property-odense-001",
+        "addressLine1": "Havnegade 12",
+        "normalizedAddress": "havnegade 12 5000 odense",
+        "postalCode": "5000",
+        "municipality": "Odense",
+        "countryCode": "DK",
+        "cadastralIdentifier": "Demo Matrikel 12a",
+        "propertyIdentifier": "MOCK-DK-ODENSE-001",
+        "sourceRecordId": "fixture-property-001"
+      },
+      "source": {
+        "id": "mock-fixtures-2026-07",
+        "name": "Mock Danish Property Fixtures",
+        "sourceType": "mock",
+        "provenanceNote": "Contains deliberately fake/anonymized Danish demo records for local development only.",
+        "allowedUseSummary": "Local development, demos, and automated tests only.",
+        "blockedUseSummary": "Not official data. Do not use for real ownership decisions, scraping, enrichment, or public claims.",
+        "retentionSummary": "Fixtures can be deleted at any time and must be replaced by documented lawful imports.",
+        "liveIntegrationEnabled": false,
+        "retrievedAt": "2026-07-06T00:00:00.000Z"
+      },
+      "ownershipRole": "owner",
+      "confidenceLabel": "high",
+      "confidenceScore": 0.91,
+      "provenanceNote": "fake fixture link created to validate source/confidence display in the MVP.",
+      "sourceRecordId": "fixture-link-001",
+      "retrievedAt": "2026-07-06T00:00:00.000Z"
+    },
+    {
+      "id": "mock-link-aase-aarhus",
+      "person": {
+        "id": "mock-person-aase-oestergaard",
+        "displayName": "Åse Østergaard",
+        "normalizedName": "aase oestergaard",
+        "sourceRecordId": "fixture-person-002"
+      },
+      "property": {
+        "id": "mock-property-aarhus-001",
+        "addressLine1": "Bøgelunden 4",
+        "normalizedAddress": "boegelunden 4 8000 aarhus c",
+        "postalCode": "8000",
+        "municipality": "Aarhus",
+        "countryCode": "DK",
+        "cadastralIdentifier": "Demo Matrikel 4b",
+        "propertyIdentifier": "MOCK-DK-AARHUS-001",
+        "sourceRecordId": "fixture-property-002"
+      },
+      "source": {
+        "id": "mock-fixtures-2026-07",
+        "name": "Mock Danish Property Fixtures",
+        "sourceType": "mock",
+        "provenanceNote": "Contains deliberately fake/anonymized Danish demo records for local development only.",
+        "allowedUseSummary": "Local development, demos, and automated tests only.",
+        "blockedUseSummary": "Not official data. Do not use for real ownership decisions, scraping, enrichment, or public claims.",
+        "retentionSummary": "Fixtures can be deleted at any time and must be replaced by documented lawful imports.",
+        "liveIntegrationEnabled": false,
+        "retrievedAt": "2026-07-06T00:00:00.000Z"
+      },
+      "ownershipRole": "co_owner",
+      "confidenceLabel": "medium",
+      "confidenceScore": 0.74,
+      "provenanceNote": "Fake fixture link created to validate ambiguous Danish-name search behavior.",
+      "sourceRecordId": "fixture-link-002",
+      "retrievedAt": "2026-07-06T00:00:00.000Z"
+    }
+  ]
+}
