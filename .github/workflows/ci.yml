@@ -4,16 +4,18 @@ on:
   pull_request:
     paths:
       - "survey-app/**"
+      - "property-search-app/**"
       - ".github/workflows/ci.yml"
   push:
     branches:
       - main
     paths:
       - "survey-app/**"
+      - "property-search-app/**"
       - ".github/workflows/ci.yml"
 
 jobs:
-  lint-typecheck-build:
+  survey-app-validation:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -42,7 +44,49 @@ jobs:
         # A dummy JAMES_DATABASE_URL is enough: pages are dynamic (use cookies()),
         # so no DB connection is made at build time.
         env:
-          JAMES_DATABASE_URL: "postgres://user:pass@localhost:5432/dummy"
+          JAMES_DATABASE_URL: "postgres://user:***@localhost:5432/dummy"
           JAMES_ADMIN_USERNAME: "admin"
           JAMES_SESSION_SECRET: "ci-dummy-secret"
         run: npm run build
+
+  property-search-app-validation:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: property-search-app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: property-search-app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Unit tests
+        run: npm run test:unit
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        env:
+          PROPERTY_SEARCH_DATABASE_URL: "postgres://user:***@localhost:5432/property_search_dummy"
+          PROPERTY_SEARCH_ADMIN_USERNAMES: "admin"
+          PROPERTY_SEARCH_SESSION_SECRET: "ci-property-search-dummy-secret"
+        run: npm run build
+
+      - name: E2E tests
+        env:
+          PROPERTY_SEARCH_DATABASE_URL: "postgres://user:***@localhost:5432/property_search_dummy"
+          PROPERTY_SEARCH_ADMIN_USERNAMES: "admin"
+          PROPERTY_SEARCH_SESSION_SECRET: "ci-property-search-dummy-secret"
+        run: npm run test:e2e
