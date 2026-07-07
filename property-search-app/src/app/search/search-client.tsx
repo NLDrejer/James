@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { SearchResults } from "@/components/property-search/search-results";
+
 import {
   getSearchFeedback,
   hasStoredSensitiveSearchAcknowledgement,
@@ -22,13 +24,6 @@ const panelToneClasses: Record<NonNullable<ReturnType<typeof getSearchFeedback>>
   warning: "border-amber-300/30 bg-amber-300/10 text-amber-50",
   danger: "border-rose-300/30 bg-rose-300/10 text-rose-50",
 };
-
-const formatRetrievedAt = (value: string | Date) =>
-  new Intl.DateTimeFormat("da-DK", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: "UTC",
-  }).format(new Date(value));
 
 export function SearchClient() {
   const [query, setQuery] = useState("");
@@ -159,45 +154,7 @@ export function SearchClient() {
           </section>
         ) : null}
 
-        {results.length > 0 ? (
-          <section className="grid gap-5 md:grid-cols-2">
-            {results.map((result) => (
-              <article key={result.id} className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-                <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-200">
-                  <span>{result.ambiguityLabel === "ambiguous_name" ? "Tvetydigt navn" : "Muligt match"}</span>
-                  <span>·</span>
-                  <span>{result.confidenceLabel} confidence</span>
-                </div>
-                <h3 className="mt-3 text-2xl font-semibold text-white">{result.person.displayName}</h3>
-                <p className="mt-2 text-base text-slate-200">{result.property.addressLine1}</p>
-                <p className="text-sm text-slate-400">{result.property.postalCode} {result.property.municipality}</p>
-                <p className="mt-4 text-sm leading-6 text-slate-300">{result.matchExplanation}</p>
-                <dl className="mt-5 grid gap-3 text-sm text-slate-300">
-                  <div>
-                    <dt className="font-semibold text-slate-100">Kilde</dt>
-                    <dd>{result.source.name}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-semibold text-slate-100">Proveniens</dt>
-                    <dd>{result.source.provenanceNote}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-semibold text-slate-100">Tilladt brug</dt>
-                    <dd>{result.source.allowedUseSummary}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-semibold text-slate-100">Blokeret brug</dt>
-                    <dd>{result.source.blockedUseSummary}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-semibold text-slate-100">Hentet</dt>
-                    <dd>{formatRetrievedAt(result.source.retrievedAt)}</dd>
-                  </div>
-                </dl>
-              </article>
-            ))}
-          </section>
-        ) : null}
+        {results.length > 0 ? <SearchResults query={query.trim()} results={results} /> : null}
       </div>
     </main>
   );
