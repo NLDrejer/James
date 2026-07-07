@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { mockPropertyProvider } from "@/lib/data-sources/mock-provider";
+import { mockFixtures, mockPropertyProvider } from "@/lib/data-sources/mock-provider";
 
 const expectSourceMetadata = (result: Awaited<ReturnType<typeof mockPropertyProvider.searchByName>>[number]) => {
   expect(result.source).toMatchObject({
@@ -42,12 +42,11 @@ describe("mock property provider", () => {
   });
 
   it("does not include CPR numbers or real source claims in fixtures", async () => {
-    const results = await mockPropertyProvider.searchByName("a");
-    const serialized = JSON.stringify(results).toLowerCase();
+    const serialized = JSON.stringify(mockFixtures).toLowerCase();
 
     expect(serialized).not.toContain("cpr");
     expect(serialized).not.toContain("tinglysningen");
     expect(serialized).not.toContain("ois.dk");
-    expect(results.every((result) => result.source.liveIntegrationEnabled === false)).toBe(true);
+    expect(mockFixtures.source.liveIntegrationEnabled).toBe(false);
   });
 });

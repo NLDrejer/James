@@ -11,11 +11,11 @@ const normalize = (value: string) =>
   value
     .trim()
     .toLocaleLowerCase("da-DK")
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
     .replace(/å/g, "aa")
     .replace(/æ/g, "ae")
     .replace(/ø/g, "oe")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
 
