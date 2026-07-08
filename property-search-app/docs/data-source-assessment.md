@@ -30,16 +30,18 @@ A source cannot be enabled unless all of the following are true:
 
 1. **Official access documented** — API/export/manual import path, auth method, cost, rate limits, and terms URL/version are recorded.
 2. **Allowed use documented** — the intended search/display workflow is explicitly allowed or approved for the source.
-3. **Name-to-property check passed** — legal/product review confirms whether a Danish name may be used as a search key and under what access controls.
-4. **Privacy controls implemented** — authentication, authorization, audit logging, rate limiting, abuse review, and retention/deletion rules are in place.
-5. **Data minimization completed** — only necessary fields are stored; references/source URLs are preferred over copied personal data.
-6. **Provenance model implemented** — every result can show source, retrieval/import time, confidence, and why the result appears.
-7. **Operational kill switch exists** — a source-level feature flag can disable live data immediately without redeploying schema.
-8. **Legal sign-off captured** — reviewer, date, decision, and conditions are recorded in the repo or approved compliance system.
+3. **Source approval record completed** — `docs/source-approvals/<source>.md` records approval reference, legal basis, approved-by/date, terms version, rate limits, retention, and credential handling.
+4. **Name-to-property check passed** — legal/product review confirms whether a Danish name may be used as a search key and under what access controls.
+5. **Privacy controls implemented** — authentication, authorization, audit logging, rate limiting, abuse review, and retention/deletion rules are in place.
+6. **Data minimization completed** — only necessary fields are stored; references/source URLs are preferred over copied personal data.
+7. **Provenance model implemented** — every result can show source, retrieval/import time, confidence, and why the result appears.
+8. **Operational kill switch exists** — a source-level feature flag can disable live data immediately without redeploying schema.
+9. **Legal sign-off captured** — reviewer, date, decision, and conditions are recorded in the repo or approved compliance system.
 
 ## MVP safe-mode rules
 
 - `PROPERTY_SEARCH_ENABLE_LIVE_SOURCES` defaults to `false`.
+- A source-specific switch (`PROPERTY_SEARCH_ENABLE_DAR`, `PROPERTY_SEARCH_ENABLE_BBR`, `PROPERTY_SEARCH_ENABLE_CVR`, `PROPERTY_SEARCH_ENABLE_OIS`, or `PROPERTY_SEARCH_ENABLE_TINGLYSNINGEN`) must also be enabled before any live source can run.
 - In Vercel Preview/Production, keep `PROPERTY_SEARCH_ENABLE_LIVE_SOURCES=false`
   until a source-specific production gate is approved.
 - In Vercel Preview/Production, set `PROPERTY_SEARCH_REQUIRE_AUTH=true` so any

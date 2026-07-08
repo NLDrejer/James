@@ -77,6 +77,20 @@ See `.env.example` for the canonical local + Vercel shape.
 - `PROPERTY_SEARCH_ADMIN_USERNAME` — single admin username fallback.
 - `PROPERTY_SEARCH_REQUIRE_AUTH` — when unset, auth defaults to `false` in local development and `true` in production. Set it explicitly to `true` on Vercel.
 - `PROPERTY_SEARCH_ENABLE_LIVE_SOURCES` — defaults to disabled; keep it `false` in production until the data-source assessment production gate is satisfied and approved.
+- `PROPERTY_SEARCH_ENABLE_DAR`, `PROPERTY_SEARCH_ENABLE_BBR`, `PROPERTY_SEARCH_ENABLE_CVR`, `PROPERTY_SEARCH_ENABLE_OIS`, `PROPERTY_SEARCH_ENABLE_TINGLYSNINGEN` — source-specific live-data kill switches. A source is live only when the global switch, its source-specific switch, and its approval record are all approved/enabled.
+
+## Lawful source approvals
+
+Before importing or enabling any real official data source, create/update the matching approval file under `docs/source-approvals/` using `template.md`. The approval must document official access, terms/agreement reference, allowed workflow, legal basis, approval reference, retention, rate limits, and required controls.
+
+The app also has code-level production-gate helpers in `src/lib/data-sources/source-approvals.ts`. The initial candidate sources are DAR, BBR, CVR, OIS, and Tinglysningen, and they remain `pending_approval` by default. Live integration requires both:
+
+```bash
+PROPERTY_SEARCH_ENABLE_LIVE_SOURCES=true
+PROPERTY_SEARCH_ENABLE_<SOURCE>=true
+```
+
+plus an approved source record. Source credentials and agreement documents must stay outside git; commit only references/summaries needed for auditability.
 
 ## Deploying on Vercel
 
@@ -130,6 +144,7 @@ Set these in Vercel for Preview/Production as appropriate:
 - `PROPERTY_SEARCH_ADMIN_USERNAMES` or `PROPERTY_SEARCH_ADMIN_USERNAME` — optional admin allowlist.
 - `PROPERTY_SEARCH_REQUIRE_AUTH=true` — keep real person/property lookup behind auth in production.
 - `PROPERTY_SEARCH_ENABLE_LIVE_SOURCES=false` — safe default; do not turn this on until `docs/data-source-assessment.md` is fully approved for the source you plan to enable.
+- Keep all `PROPERTY_SEARCH_ENABLE_<SOURCE>` flags (`DAR`, `BBR`, `CVR`, `OIS`, `TINGLYSNINGEN`) set to `false` until the matching `docs/source-approvals/<source>.md` record is approved.
 
 If your Vercel Postgres or Neon integration only provides generic names such as
 `DATABASE_URL` or `SESSION_SECRET`, the app still supports them as compatibility

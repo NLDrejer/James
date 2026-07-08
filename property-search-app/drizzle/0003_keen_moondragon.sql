@@ -1,0 +1,1 @@
+CREATE INDEX "source_import_batches_retention_expires_at_idx" ON "source_import_batches" USING btree ("retention_expires_at");
