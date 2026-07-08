@@ -7,12 +7,12 @@ reviews:
     enabled: true
     auto_incremental_review: true
   path_filters:
-    - "!node_modules/**"
-    - "!.next/**"
-    - "!dist/**"
-    - "!build/**"
-    - "!coverage/**"
-    - "!*.lock"
+    - "!**/node_modules/**"
+    - "!**/.next/**"
+    - "!**/dist/**"
+    - "!**/build/**"
+    - "!**/coverage/**"
+    - "!**/*.lock"
   path_instructions:
     - path: "property-search-app/**/*.{ts,tsx,js,jsx}"
       instructions: "Focus on code quality, type safety, performance, and best practices for Next.js and React."

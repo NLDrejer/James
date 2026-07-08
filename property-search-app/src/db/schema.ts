@@ -119,6 +119,7 @@ export const sourceImportBatches = pgTable(
   (table) => [
     index("source_import_batches_source_id_idx").on(table.sourceId),
     index("source_import_batches_source_key_idx").on(table.sourceKey),
+    index("source_import_batches_retention_expires_at_idx").on(table.retentionExpiresAt),
     uniqueIndex("source_import_batches_raw_input_hash_unique").on(table.rawInputHash),
     check("source_import_batches_record_count_non_negative", sql`${table.recordCount} >= 0`),
   ],

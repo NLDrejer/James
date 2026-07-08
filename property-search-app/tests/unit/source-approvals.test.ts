@@ -40,6 +40,33 @@ describe("source approval production gates", () => {
     ).toThrow(/approvalReference/);
   });
 
+  it("rejects approved sources with unresolved TODO placeholders", () => {
+    expect(() =>
+      validateSourceApproval({
+        ...approvedDarRecord,
+        legalBasis: "TODO: record legal basis before approval",
+      }),
+    ).toThrow(/TODO placeholder/);
+  });
+
+  it("fails closed for malformed approved records", () => {
+    expect(
+      isSourceLiveIntegrationEnabled(
+        {
+          ...approvedDarRecord,
+          sourceAccess: {
+            ...approvedDarRecord.sourceAccess,
+            termsUrl: "TODO: record official terms URL or agreement reference",
+          },
+        },
+        {
+          PROPERTY_SEARCH_ENABLE_LIVE_SOURCES: "true",
+          PROPERTY_SEARCH_ENABLE_DAR: "true",
+        },
+      ),
+    ).toBe(false);
+  });
+
   it("accepts approved source records with access, retention, and controls documented", () => {
     const approval = validateSourceApproval(approvedDarRecord);
 
